@@ -319,6 +319,13 @@ def export_vrm(out_path: str | Path, avatar_name: str = "SpikeAvatar",
     raise TimeoutError(f"{out_path} was never written")
 
 
+# Horizontal OCR band for the VRM Settings modal. The modal has a fixed pixel
+# width, so it covers a larger fraction of narrower windows: at 1920 px its
+# labels start near 0.34 of the width, left of the band calibrated at 2560 px.
+# 0.70 still stops short of the Export Info panel beside the modal.
+VRM_MODAL_X = (0.30, 0.70)
+
+
 def select_export_format(version: str = "1.0") -> None:
     """Pick the VRM spec version radio at the top of the VRM Settings modal.
 
@@ -333,8 +340,8 @@ def select_export_format(version: str = "1.0") -> None:
     else:
         raise ValueError(f"unknown VRM export format {version!r} (use 1.0 or 0.0)")
     s = shot("vrm-export-format")
-    region = (int(s.image.width * 0.38), int(s.image.height * 0.25),
-              int(s.image.width * 0.62), int(s.image.height * 0.42))
+    region = (int(s.image.width * VRM_MODAL_X[0]), int(s.image.height * 0.25),
+              int(s.image.width * VRM_MODAL_X[1]), int(s.image.height * 0.42))
     m = next((hit for label in labels
               if (hit := L.find_text(s, label, exact=True, region=region))), None)
     if m is None:
@@ -373,8 +380,8 @@ def _fill_vrm_settings(avatar_name: str, creators: str, version: str = "1.0") ->
             int(s.image.width * 0.30), 0, int(s.image.width * 0.70),
             int(s.image.height * 0.35)))
         cx = title.center[0] if title else s.image.width // 2
-        region = (int(s.image.width * 0.36), 0, int(s.image.width * 0.64),
-                  s.image.height)
+        region = (int(s.image.width * VRM_MODAL_X[0]), 0,
+                  int(s.image.width * VRM_MODAL_X[1]), s.image.height)
         hits = L.find_text(s, word, exact=True, all_matches=True, region=region)
         if not hits:
             raise RuntimeError(f"VRM Settings has no {word!r} caption")

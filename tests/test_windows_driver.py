@@ -283,6 +283,21 @@ class WorkflowVerification(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "radio was not selected"):
                 actions.select_export_format("0.0")
 
+    def test_vrm_modal_band_covers_labels_at_1920_wide(self):
+        # VRoid 2.16.0 at 1920x1111: "VRM1.0" starts at x=699, "Creators" at x=657.
+        image = capture.Shot(Image.new("RGB", (1920, 1111)), Path("format.png"), 0, 0, 1)
+        regions = []
+        def find_text(_, label, **kwargs):
+            regions.append(kwargs["region"])
+            return locate.Match(label, 90, 699, 279, 63, 13) if label == "VRM1.0" else None
+        with patch.object(actions, "shot", return_value=image), \
+                patch.object(locate, "find_text", side_effect=find_text), \
+                patch.object(locate, "find_color_blobs", return_value=[object()]), \
+                patch.object(inputs, "click"), patch("time.sleep"):
+            actions.select_export_format("1.0")
+        self.assertLessEqual(regions[0][0], 657)
+        self.assertLess(regions[0][2], 1366)  # Export Info panel
+
     def test_unknown_export_version_rejected_before_input(self):
         with patch.object(actions, "shot") as shot, patch.object(inputs, "click") as click:
             with self.assertRaises(ValueError):
