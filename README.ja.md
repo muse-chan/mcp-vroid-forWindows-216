@@ -8,6 +8,9 @@
 
 Windowsでは **pywinauto／Win32による入力・ウィンドウ管理** と **Pillowによる撮影** を追加し、既存のOCR、画像認識、VRoidの操作手順を利用します。元の18ツールの名前・引数・座標指定は維持しています。
 
+> **このフォーク（muse-chan/mcp-vroid-forWindows-216）について**
+> Windows版を **VRoid Studio 2.16.0** 向けにしたフォークです。公式サイト版（Steam版でない単体版）も `MCP_VROID_EXE` 指定で対象にします。操作位置のアンカーは2.14.0の校正をそのまま引き継いでいます。公式の2.14.0 → 2.16.0の変更では、このサーバーが目印にするタブ・パラメーターパネル・書き出しフローは移動していないためです。2.16.0の変更点と、実作業の前に行う確認手順は [docs/vroid-216.ja.md](docs/vroid-216.ja.md) を参照してください。
+
 - [Windowsでの導入](#windowsでの導入)
 - [Linuxでの導入](#linuxでの導入)
 - [ツール一覧](#ツール一覧)
@@ -45,7 +48,7 @@ VRMの書き出し時に、VRM Settingsの必須項目を入力する例：
 
 - Windows 10／11
 - Python **3.11以上**と **[uv](https://docs.astral.sh/uv/)**
-- **Steam版VRoid Studio**（アプリID：`1486350`）。操作位置は **2.14.0** を基準にしています。BOOTH版などは `MCP_VROID_EXE` で実行ファイルを指定します。
+- **VRoid Studio 2.16.0**（Steam版アプリID：`1486350`、または公式サイト版）。操作位置のアンカーは **2.14.0** の校正を引き継いでいます（[docs/vroid-216.ja.md](docs/vroid-216.ja.md) 参照）。公式サイト版・BOOTH版などは `MCP_VROID_EXE` で実行ファイルを指定します。
 - **Tesseract OCR** と英語の学習データ **`eng`**。実行ファイルは `MCP_VROID_TESSERACT` で上書きできます。
 - VRoidは1つだけ起動し、1つの操作セッションで使用
 
@@ -319,6 +322,8 @@ native/vpointer.c            Linux用のWaylandポインターヘルパー
 | Windows 11 | 1920×1080 | 100％ | 2.14.0（英語、Steam） | 未確認 |
 | Windows 11 | 1920×1080 | 125％ | 2.14.0（英語、Steam） | 未確認 |
 | Windows 11 | 1920×1080 | 150％ | 2.14.0（英語、Steam） | 未確認 |
+| Windows 11 | 2560×1440 | 100％ | 2.16.0（英語、公式サイト版） | 確認待ち（docs/vroid-216.ja.md 参照） |
+| Windows 11 | 1920×1080 | 100％ | 2.16.0（英語、公式サイト版） | 確認待ち（docs/vroid-216.ja.md 参照） |
 
 書き出し以外の操作位置は、まだ2560×1440で調整したままです。別の環境では `scripts/windows_acceptance.py` の全フェーズと `alignment --dpi 120`／`--dpi 144` を実行し、結果を報告してください。
 

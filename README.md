@@ -13,6 +13,15 @@ documentation below are retained. See **[Windows quickstart](#windows-quickstart
 for the Windows-specific setup and behavior, and
 **[Linux quickstart](#linux-quickstart)** for Linux/Hyprland.
 
+> **This fork (muse-chan/mcp-vroid-forWindows-216)** retargets the Windows
+> backend to **VRoid Studio 2.16.0**, including the official-site
+> (non-Steam) edition launched through `MCP_VROID_EXE`. The UI anchors are
+> carried over unchanged from the 2.14.0 calibration: the official
+> 2.14.0 → 2.16.0 changes do not move the tabs, parameter panels or export
+> flow this server locates. See [docs/vroid-216.md](docs/vroid-216.md) for
+> the 2.16.0 change summary and the verification checklist to run before
+> real work.
+
 ## Why
 
 VRoid Studio has no scripting API, no CLI, no plugin surface. The only way in
@@ -131,8 +140,11 @@ Optional environment variables:
 Prerequisites:
 
 * **Windows 10/11**
-* **VRoid Studio**, Steam edition (appid `1486350`), calibrated against
-  **2.14.0**. Other installs (e.g. BOOTH) work through `MCP_VROID_EXE`.
+* **VRoid Studio 2.16.0**, Steam edition (appid `1486350`) or the
+  official-site edition. The UI anchors were calibrated against **2.14.0**
+  and are carried over to 2.16.0 unchanged; see
+  [docs/vroid-216.md](docs/vroid-216.md). Non-Steam installs (official
+  site, BOOTH) work through `MCP_VROID_EXE`.
 * **Python 3.11+** and [`uv`](https://docs.astral.sh/uv/)
 * **Tesseract OCR** with its **English (`eng`) language data**. Override the
   executable with `MCP_VROID_TESSERACT`.
@@ -431,6 +443,8 @@ native/vpointer.c             zwlr_virtual_pointer client
 | Windows 11 | 1920×1080 | 100% | 2.14.0 (English, Steam) | not yet verified |
 | Windows 11 | 1920×1080 | 125% | 2.14.0 (English, Steam) | not yet verified |
 | Windows 11 | 1920×1080 | 150% | 2.14.0 (English, Steam) | not yet verified |
+| Windows 11 | 2560×1440 | 100% | 2.16.0 (English, official site) | verification pending — see docs/vroid-216.md |
+| Windows 11 | 1920×1080 | 100% | 2.16.0 (English, official site) | verification pending — see docs/vroid-216.md |
 
 Apart from the export flow, fractional anchors are still calibrated at
 2560×1440. Run `scripts/windows_acceptance.py` (all phases, then

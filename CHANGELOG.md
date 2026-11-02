@@ -4,6 +4,32 @@ All notable changes to this project are documented here. Format loosely
 follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions
 follow [semantic versioning](https://semver.org/).
 
+## [2.16.0 edition] — 2026-11-02
+
+Fork of the Windows backend (muse-chan/mcp-vroid-forWindows-216) retargeted
+to **VRoid Studio 2.16.0**.
+
+### Changed
+
+* The documented target VRoid version is now 2.16.0, for both the Steam
+  edition and the official-site (non-Steam) edition launched through
+  `MCP_VROID_EXE`. No driver code changes were needed: the Windows backend
+  verifies the `VRoidStudio.exe` process rather than a versioned window
+  title, and the official 2.14.0 → 2.16.0 changes (hair-shape saving in
+  the Hairstyle editor, a Performance Monitor settings option, an eraser
+  fix) do not move the tabs, parameter panels or export flow the anchors
+  locate.
+* Added `docs/vroid-216.md` and `docs/vroid-216.ja.md`: the 2.16.0 change
+  summary, edition notes, and the verification checklist to run before
+  real work.
+
+### Known limitations
+
+* Anchors remain calibrated on 2.14.0; a 2.16.0 verification run
+  (`scripts/windows_acceptance.py`) is still outstanding. The new
+  hair-shape save UI in the 2.16.0 Hairstyle editor is untested, as is the
+  hair editor in general.
+
 ## [Unreleased]
 
 ### Added
