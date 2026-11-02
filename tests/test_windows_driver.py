@@ -358,6 +358,27 @@ class EnvironmentAndFiles(unittest.TestCase):
                     shot.assert_not_called()
                 self.assertEqual(path.read_bytes(), b"existing model")
 
+    def test_save_as_clicks_tab_strip_before_hotkey_on_windows_only(self):
+        image = capture.Shot(Image.new("RGB", (1920, 1111)), Path("editor.png"), 0, 0, 1)
+        for is_windows in (True, False):
+            with self.subTest(windows=is_windows), tempfile.TemporaryDirectory() as temp, \
+                    patch.object(window, "IS_WINDOWS", is_windows), \
+                    patch.object(actions, "shot", return_value=image), \
+                    patch.object(windows, "window_dpi", return_value=96), \
+                    patch.object(actions, "_save_dialog", side_effect=RuntimeError("stop")), \
+                    patch("time.sleep"):
+                calls = MagicMock()
+                with patch.object(inputs, "click", calls.click), \
+                        patch.object(inputs, "hotkey", calls.hotkey):
+                    with self.assertRaisesRegex(RuntimeError, "stop"):
+                        actions.save_project_as(Path(temp) / "model.vroid")
+                names = [c[0] for c in calls.mock_calls]
+                if is_windows:
+                    self.assertEqual(names, ["click", "hotkey"])
+                    self.assertEqual(calls.click.call_args.args, (1152.0, 24.0))
+                else:
+                    self.assertEqual(names, ["hotkey"])
+
     def test_save_dialog_uses_native_path_and_waits_for_close(self):
         with patch.object(windows, "find_save_dialog", return_value=20), \
                 patch.object(windows, "_focus_handle") as focus, \

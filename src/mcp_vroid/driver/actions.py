@@ -724,6 +724,15 @@ def select_none_preset() -> Shot:
     return shot("preset-none")
 
 
+def _click_tab_strip_gap() -> None:
+    """Click the blank stretch of the editor's tab strip, between the tabs and
+    the toolbar icons. Raising VRoid 2.16.0 alone does not give Unity keyboard
+    focus, so a hotkey sent straight after vroid_launch is silently dropped."""
+    from . import windows
+    s = shot()
+    I.click(s.image.width * 0.6, windows.window_dpi() / 4, space="image", shot=s)
+
+
 def save_project_as(out_path: str | Path, timeout: float = 60.0) -> Path:
     """Save As (Ctrl+Shift+S) into an explicit .vroid path via the Wine dialog.
 
@@ -737,6 +746,8 @@ def save_project_as(out_path: str | Path, timeout: float = 60.0) -> Path:
     if W.IS_WINDOWS and out_path.exists():
         raise FileExistsError(f"Output already exists: {out_path}")
     out_path.parent.mkdir(parents=True, exist_ok=True)
+    if W.IS_WINDOWS:
+        _click_tab_strip_gap()
     I.hotkey("ctrl+shift+s")
     time.sleep(1.5)
     _save_dialog(out_path, timeout=timeout)
