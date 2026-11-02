@@ -283,6 +283,21 @@ class WorkflowVerification(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "radio was not selected"):
                 actions.select_export_format("0.0")
 
+    def test_vrm_modal_band_covers_labels_at_1920_wide(self):
+        # VRoid 2.16.0 at 1920x1111: "VRM1.0" starts at x=699, "Creators" at x=657.
+        image = capture.Shot(Image.new("RGB", (1920, 1111)), Path("format.png"), 0, 0, 1)
+        regions = []
+        def find_text(_, label, **kwargs):
+            regions.append(kwargs["region"])
+            return locate.Match(label, 90, 699, 279, 63, 13) if label == "VRM1.0" else None
+        with patch.object(actions, "shot", return_value=image), \
+                patch.object(locate, "find_text", side_effect=find_text), \
+                patch.object(locate, "find_color_blobs", return_value=[object()]), \
+                patch.object(inputs, "click"), patch("time.sleep"):
+            actions.select_export_format("1.0")
+        self.assertLessEqual(regions[0][0], 657)
+        self.assertLess(regions[0][2], 1366)  # Export Info panel
+
     def test_unknown_export_version_rejected_before_input(self):
         with patch.object(actions, "shot") as shot, patch.object(inputs, "click") as click:
             with self.assertRaises(ValueError):
@@ -357,6 +372,27 @@ class EnvironmentAndFiles(unittest.TestCase):
                     key.assert_not_called()
                     shot.assert_not_called()
                 self.assertEqual(path.read_bytes(), b"existing model")
+
+    def test_save_as_clicks_tab_strip_before_hotkey_on_windows_only(self):
+        image = capture.Shot(Image.new("RGB", (1920, 1111)), Path("editor.png"), 0, 0, 1)
+        for is_windows in (True, False):
+            with self.subTest(windows=is_windows), tempfile.TemporaryDirectory() as temp, \
+                    patch.object(window, "IS_WINDOWS", is_windows), \
+                    patch.object(actions, "shot", return_value=image), \
+                    patch.object(windows, "window_dpi", return_value=96), \
+                    patch.object(actions, "_save_dialog", side_effect=RuntimeError("stop")), \
+                    patch("time.sleep"):
+                calls = MagicMock()
+                with patch.object(inputs, "click", calls.click), \
+                        patch.object(inputs, "hotkey", calls.hotkey):
+                    with self.assertRaisesRegex(RuntimeError, "stop"):
+                        actions.save_project_as(Path(temp) / "model.vroid")
+                names = [c[0] for c in calls.mock_calls]
+                if is_windows:
+                    self.assertEqual(names, ["click", "hotkey"])
+                    self.assertEqual(calls.click.call_args.args, (1152.0, 24.0))
+                else:
+                    self.assertEqual(names, ["hotkey"])
 
     def test_save_dialog_uses_native_path_and_waits_for_close(self):
         with patch.object(windows, "find_save_dialog", return_value=20), \

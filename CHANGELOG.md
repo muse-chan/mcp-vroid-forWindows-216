@@ -23,6 +23,18 @@ to **VRoid Studio 2.16.0**.
   summary, edition notes, and the verification checklist to run before
   real work.
 
+### Fixed
+
+* Windows Save As (`vroid_save_project` with a name) now clicks the blank
+  part of the editor tab strip before sending Ctrl+Shift+S. On 2.16.0,
+  raising the window alone did not give Unity keyboard focus, so the hotkey
+  was dropped and the call failed with "Windows save dialog never appeared".
+* VRM export now searches a wider horizontal band (0.30-0.70 of the width)
+  of the VRM Settings modal for the format radio and the Name/Creators
+  captions. The modal has a fixed pixel width, so in a 1920 px window its
+  labels started left of the old band and export failed with
+  "no VRM1.0 radio in the VRM Settings modal".
+
 ### Known limitations
 
 * Anchors remain calibrated on 2.14.0; a 2.16.0 verification run
